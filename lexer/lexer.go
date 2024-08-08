@@ -45,6 +45,18 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.COMMA, l.ch)
 	case ';':
 		tok = newToken(token.SEMICOLON, l.ch)
+	case '!':
+		tok = newToken(token.BANG, l.ch)
+	case '-':
+		tok = newToken(token.MINUS, l.ch)
+	case '*':
+		tok = newToken(token.ASTERISK, l.ch)
+	case '/':
+		tok = newToken(token.SLASH, l.ch)
+	case '<':
+		tok = newToken(token.LT, l.ch)
+	case '>':
+		tok = newToken(token.GT, l.ch)
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -107,6 +119,8 @@ func (l *Lexer) readNumber() string {
 	return l.input[position:l.position]
 }
 
+// We only read in integers. What about floats? Or numbers in hex notation? Octal notation?
+// We ignore them and just say that Arı doesn’t support this.
 func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
 }
