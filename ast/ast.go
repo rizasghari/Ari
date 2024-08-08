@@ -12,6 +12,7 @@ package ast
 type Node interface {
 	// TokenLiteral() will be used only for debugging and testing.
 	TokenLiteral() string
+	String() string
 }
 
 type Statement interface {
