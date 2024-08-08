@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"log"
 	"testing"
 
 	"github.com/rizasghari/ari/ast"
@@ -20,7 +19,7 @@ func TestLetStatements(t *testing.T) {
 
 	if program != nil {
 		for _, stmt := range program.Statements {
-			log.Printf("TestLetStatements stmt: %v", stmt)
+			t.Logf("TestLetStatements stmt: %v", stmt)
 		}
 	}
 
