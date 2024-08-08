@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"log"
 	"testing"
 
 	"github.com/rizasghari/ari/ast"
@@ -16,6 +17,13 @@ func TestLetStatements(t *testing.T) {
 	l := lexer.New(input)
 	p := New(l)
 	program := p.ParseProgram()
+
+	if program != nil {
+		for _, stmt := range program.Statements {
+			log.Printf("TestLetStatements stmt: %v", stmt)
+		}
+	}
+
 	if program == nil {
 		t.Fatalf("ParseProgram() returned nil")
 	}
