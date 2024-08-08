@@ -7,18 +7,19 @@ import (
 
 func TestNextToken(t *testing.T) {
 	input := `let five = 5;
-let ten = 10;
-   let add = fn(x, y) {
-     x + y;
-};
-   let result = add(five, ten);
-   !-/*5;
-   5 < 10 > 5;
-   if (5 < 10) {
-       return true;
-   } else {
-       return false;
-}`
+	let ten = 10;
+	   let add = fn(x, y) {
+		 x + y;
+	};
+	   let result = add(five, ten);
+	   !-/*5;
+	   5 < 10 > 5;
+	   if (5 < 10) {
+		   return true;
+	   } else {
+		   return false;
+	}
+	10 == 10; 10 != 9; `
 
 	tests := []struct {
 		expectedType    token.TokenType
@@ -89,15 +90,15 @@ let ten = 10;
 		{token.FALSE, "false"},
 		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
-		// {token.INT, "10"},
-		// {token.EQ, "=="},
-		// {token.INT, "10"},
-		// {token.SEMICOLON, ";"},
-		// {token.INT, "10"},
-		// {token.NOT_EQ, "!="},
-		// {token.INT, "9"},
-		// {token.SEMICOLON, ";"},
-		// {token.EOF, ""},
+		{token.INT, "10"},
+		{token.EQ, "=="},
+		{token.INT, "10"},
+		{token.SEMICOLON, ";"},
+		{token.INT, "10"},
+		{token.NOT_EQ, "!="},
+		{token.INT, "9"},
+		{token.SEMICOLON, ";"},
+		{token.EOF, ""},
 	}
 
 	l := New(input)

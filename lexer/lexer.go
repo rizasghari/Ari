@@ -30,7 +30,11 @@ func (l *Lexer) NextToken() token.Token {
 	l.skipWhitespace()
 	switch l.ch {
 	case '=':
-		tok = newToken(token.ASSIGN, l.ch)
+		if l.peekChar() == '=' {
+			tok = l.makeTwoCharToken(token.EQ)
+		} else {
+			tok = newToken(token.ASSIGN, l.ch)
+		}
 	case '+':
 		tok = newToken(token.PLUS, l.ch)
 	case '(':
@@ -46,7 +50,11 @@ func (l *Lexer) NextToken() token.Token {
 	case ';':
 		tok = newToken(token.SEMICOLON, l.ch)
 	case '!':
-		tok = newToken(token.BANG, l.ch)
+		if l.peekChar() == '=' {
+			tok = l.makeTwoCharToken(token.NOT_EQ)
+		} else {
+			tok = newToken(token.BANG, l.ch)
+		}
 	case '-':
 		tok = newToken(token.MINUS, l.ch)
 	case '*':
@@ -75,6 +83,27 @@ func (l *Lexer) NextToken() token.Token {
 	}
 	l.readChar()
 	return tok
+}
+
+func (l *Lexer) makeTwoCharToken(tokenType token.TokenType) token.Token {
+	ch := l.ch
+	l.readChar()
+	literal := string(ch) + string(l.ch)
+	return token.Token{Type: tokenType, Literal: literal}
+}
+
+// peekChar() is really similar to readChar(), except that it doesn’t increment l.position and
+// l.readPosition. We only want to “peek” ahead in the input and not move around in it, so we
+// know what a call to readChar() would return. Most lexers and parser have such a “peek”
+// function that looks ahead and most of the time it only returns the immediately next character.
+// The difficulty of parsing different languages often comes down to how far you have to peek ahead
+// (or look backwards!) in the source code to make sense of it.
+func (l *Lexer) peekChar() byte {
+	if l.readPosition >= len(l.input) {
+		return 0
+	} else {
+		return l.input[l.readPosition]
+	}
 }
 
 // This little helper function is found in a lot of parsers.
