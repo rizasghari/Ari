@@ -27,7 +27,7 @@ func (l *Lexer) readChar() {
 
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
-
+	l.skipWhitespace()
 	switch l.ch {
 	case '=':
 		tok = newToken(token.ASSIGN, l.ch)
@@ -48,9 +48,67 @@ func (l *Lexer) NextToken() token.Token {
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
+	default:
+		if isLetter(l.ch) {
+			tok.Literal = l.readIdentifier()
+			tok.Type = token.LookupIdent(tok.Literal)
+			return tok
+		} else if isDigit(l.ch) {
+			tok.Type = token.INT
+			tok.Literal = l.readNumber()
+			return tok
+		} else {
+			tok = newToken(token.ILLEGAL, l.ch)
+		}
 	}
 	l.readChar()
 	return tok
+}
+
+// This little helper function is found in a lot of parsers.
+// Sometimes it’s called eatWhitespace and sometimes consumeWhitespace
+// and sometimes something entirely different. Which characters these
+// functions actually skip depends on the language being lexed.
+// Some language implementa- tions do create tokens for newline characters
+// for example and throw parsing errors if they are not at the correct place
+// in the stream of tokens. We skip over newline characters to make the
+// parsing step later on a little easier.
+func (l *Lexer) skipWhitespace() {
+	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+		l.readChar()
+	}
+}
+
+func (l *Lexer) readIdentifier() string {
+	position := l.position
+	for isLetter(l.ch) {
+		l.readChar()
+	}
+	return l.input[position:l.position]
+}
+
+// The isLetter helper function just checks whether the given argument is a letter.
+// That sounds easy enough, but what’s noteworthy about isLetter is that changing
+// this function has a larger impact on the language our interpreter will be able to
+// parse than one would expect from such a small function. As you can see, in our case
+// it contains the check ch == '_', which means that we’ll treat _ as a letter and allow
+// it in identifiers and keywords. That means we can use variable names like foo_bar. Other
+// programming languages even allow ! and ? in identifiers. If you want to allow that too,
+// this is the place to sneak it in.
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+}
+
+func (l *Lexer) readNumber() string {
+	position := l.position
+	for isDigit(l.ch) {
+		l.readChar()
+	}
+	return l.input[position:l.position]
+}
+
+func isDigit(ch byte) bool {
+	return '0' <= ch && ch <= '9'
 }
 
 func newToken(tokenType token.TokenType, ch byte) token.Token {
